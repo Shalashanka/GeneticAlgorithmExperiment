@@ -1,17 +1,37 @@
+var vector = [];
 function setup() {
   createCanvas(windowWidth-50, windowHeight-50);
+  
   player = new Player();
   food = new Food();
   frameRate(120);
 }
 
 function draw() {
+	fill(255,0,0);
 	player.draw();
-	food.draw();
+	//food.draw();
 	player.checkEat();
 	player.checkMarginDistance();
 }
 
+function Vector(){
+	this.x;
+	this.y;
+	
+	this.getX = function(){
+		return this.x;
+	}
+	this.getY = function(){
+		return this.y;
+	}
+	this.setX = function(xcopy){
+		this.x = xcopy;
+	}
+	this.setY = function(ycopy){
+		this.y = ycopy;
+	}
+}
 
 function keyPressed() {
   if (keyCode === LEFT_ARROW) {
@@ -26,6 +46,22 @@ function keyPressed() {
   
 }
 
+function addVect(){
+	vect = new Vector();
+	vect.setX(player.x);
+	vect.setY(player.y);
+	vector.push(vect);
+	displayVect();
+}
+
+function displayVect(){
+	for (var i=0; i<vector.length; i++) {
+		fill(255);
+		noStroke();
+		ellipse(vector[i].getX(),vector[i].getY(),player.diameter,player.diameter);
+		stroke(0);
+	}
+}
 
 function randomDirection(){
 	var X;
@@ -108,8 +144,11 @@ function Food(){
 	};
 	
 	this.draw = function (){
-		clear();
+		//clear();
+		background(255, 165, 48); 
 		ellipse(this.x,this.y,this.diameter,this.diameter);
+		addVect();
+
 		if(this.directionX === "Left"){
 			this.moveXLeft();
 			this.directionY = "";
@@ -135,8 +174,8 @@ function Food(){
 		centerDistanceX = abs(int(windowWidth/2 - this.x));
 		centerDistanceY = abs(int(windowHeight/2 - this.y));
 		console.clear();
-		console.log("X :" + centerDistanceX);
-		console.log("Y :" + centerDistanceY);
+		/*console.log("X :" + centerDistanceX);
+		console.log("Y :" + centerDistanceY);*/
 	};
 	this.checkEat = function(){
 		var distanceX = abs(food.getX() - this.x);
