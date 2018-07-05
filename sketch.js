@@ -1,18 +1,18 @@
 var vector = [];
 function setup() {
-  createCanvas(windowWidth-50, windowHeight-50);
-  
+  createCanvas(windowWidth-20, windowHeight-20);
   player = new Player();
   food = new Food();
   frameRate(120);
 }
 
 function draw() {
-	fill(255,0,0);
 	player.draw();
 	//food.draw();
-	player.checkEat();
-	player.checkMarginDistance();
+	//player.checkEat();
+	//player.checkMarginDistance();
+	bordersStop();
+	
 }
 
 function Vector(){
@@ -42,8 +42,11 @@ function keyPressed() {
     player.moveYUp();
   }else if (keyCode === DOWN_ARROW) {
     player.moveYDown();
+  }else if(keyCode === 107){
+	  player.speed += 2;
+  }else if(keyCode === 109){
+	  player.speed -= 2;
   }
-  
 }
 
 function addVect(){
@@ -60,31 +63,112 @@ function displayVect(){
 		noStroke();
 		ellipse(vector[i].getX(),vector[i].getY(),player.diameter,player.diameter);
 		stroke(0);
+		fill(0);
+		//fill(255,0,0);
 	}
 }
+
+function bordersStop(){
+
+	this.distanceXLeft = player.x - (player.diameter / 2) - 5;
+	this.distanceXRight = windowWidth - (player.x + (player.diameter));
+	this.distanceYUp = player.y - (player.diameter / 2) - 5;
+	this.distanceYDown = windowHeight - (player.y + (player.diameter));
+	this.direction;
+	
+	if(player.directionX != ""){
+		this.direction = player.directionX;
+	}else if(player.directionY != ""){
+		this.direction = player.directionY;
+	}
+	
+	switch(this.direction){
+		case "Left":
+			if(this.distanceXLeft <= 0){
+				//player.stop();
+				player.x = player.diameter / 2 +  1;
+				randomDirection();
+			}
+			break;
+		case "Right":
+			if(this.distanceXRight <= 0){
+				//player.stop();
+				player.x = windowWidth - (player.diameter);
+				randomDirection();
+			}
+			break;
+		case "Up":
+			if(this.distanceYUp <= 0){
+				//player.stop();
+				player.y = player.diameter / 2 + 1 ;
+				randomDirection();
+			}
+			break;
+		case "Down":
+			if(this.distanceYDown <= 0){
+				//player.stop();
+				player.y = windowHeight - (player.diameter);
+				randomDirection();
+			}
+			break;	
+	}
+
+}
+
+function drawHead(direction){
+	this.x;
+	this.y;
+	this.diameter = 10;
+	
+	if(direction === "Up"){
+		this.x = player.x;
+		this.y = player.y - 25;
+		ellipse(this.x,this.y,this.diameter,this.diameter);
+	}else if(direction === "Down"){
+		this.x = player.x;
+		this.y = player.y + 25;
+		ellipse(this.x,this.y,this.diameter,this.diameter);
+	}else if(direction === "Right"){
+		this.x = player.x + 25;
+		this.y = player.y ;
+		ellipse(this.x,this.y,this.diameter,this.diameter);
+	}else if(direction === "Left"){
+		this.x = player.x - 25;
+		this.y = player.y ;
+		ellipse(this.x,this.y,this.diameter,this.diameter);
+	}
+}
+
 
 function randomDirection(){
 	var X;
 	var Y;
+	var probability;
 	
 	if(player.directionX === "Left" || player.directionX === "Right"){
-		X = int(random(0,2));
+		probability = int(random(0,10));
+		if(probability === 3){
+			X = int(random(0,2));
 
-		if( X === 0){
-			player.moveYDown();
+			if( X === 0){
+				player.moveYDown();
 
-		}else if(X === 1){
-			player.moveYUp();
+			}else if(X === 1){
+				player.moveYUp();
 
+			}
 		}
 	}else if(player.directionY === "Up" || player.directionY === "Down"){
-		Y = int(random(0,2));
-		if( Y === 0){
-			player.moveXLeft();
+		probability = int(random(0,10));
+		if(probability === 5){
+			Y = int(random(0,2));
+			if( Y === 0){
+				player.moveXLeft();
 
-		}else if(Y === 1){
-			player.moveXRight();
+			}else if(Y === 1){
+				player.moveXRight();
 
+			}
 		}
 	}		
 	
@@ -142,13 +226,26 @@ function Food(){
 		this.directionY = "Down";
 		this.directionX = "";
 	};
+	this.stop = function(){
+		this.directionX = "";
+		this.directionY = "";
+	}
+	
 	
 	this.draw = function (){
 		//clear();
 		background(255, 165, 48); 
-		ellipse(this.x,this.y,this.diameter,this.diameter);
 		addVect();
-
+		strokeWeight(4);
+		stroke(0);
+		fill(57);
+		ellipse(this.x,this.y,this.diameter,this.diameter,50);
+		strokeWeight(2);
+		if(this.directionX != ""){
+			drawHead(this.directionX);
+		}else if(this.directionY != ""){
+			drawHead(this.directionY);
+		}
 		if(this.directionX === "Left"){
 			this.moveXLeft();
 			this.directionY = "";
@@ -167,16 +264,7 @@ function Food(){
 		}
 		this.probability = int(random(0,10));
 	};
-	this.checkMarginDistance = function(){
-		var centerDistanceX;
-		var centerDistanceY;
-		
-		centerDistanceX = abs(int(windowWidth/2 - this.x));
-		centerDistanceY = abs(int(windowHeight/2 - this.y));
-		console.clear();
-		/*console.log("X :" + centerDistanceX);
-		console.log("Y :" + centerDistanceY);*/
-	};
+	
 	this.checkEat = function(){
 		var distanceX = abs(food.getX() - this.x);
 		var distanceY = abs(food.getY() - this.y);
