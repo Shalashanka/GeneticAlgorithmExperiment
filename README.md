@@ -1,4 +1,4 @@
-# GeneticAlgorithmExperiment
+# Genetic Algorithm Experiment for automatic vacuum cleaner's path prediction, obstacle avoidance and most efficient way calculation
 An experiment for the development of a Genetic Algorithm made by me for fun, no libraries(except p5.js) were used, everything was studied and implemented by me.
 
 ## Features
